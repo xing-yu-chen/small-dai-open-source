@@ -8,9 +8,9 @@
 [小呆博客-个人学习记录](https://xing-yu-chen.github.io/)
 
 ## 地址介绍
-druid管理界面:http://localhost/v1/druid/login.html (账号：small-dai 密码： small-dai-open-source)
-swagger接口测试:http://localhost/v1/swagger-ui/index.html
-后台项目:http://localhost/admin/index.html
+druid管理界面:http://localhost/v1/druid/login.html (账号：small-dai 密码： small-dai-open-source)<br>
+swagger接口测试:http://localhost/v1/swagger-ui/index.html<br>
+后台项目:http://localhost/admin/index.html<br>
 
 ## 相关技术文档
 - FreeMarker+JDBC逆向
