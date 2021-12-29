@@ -38,7 +38,7 @@ public class AccountController {
         //用户名和密码都不为空的时候执行
         if(loginDto.getUserName().length() != 0 && loginDto.getPassword().length() != 0){
             //通过用户名获取用户信息
-            ${userDaoClass} user = ${userDaoClass?uncap_first}Service.getOne(new QueryWrapper<${userDaoClass}>().eq("username", loginDto.getUserName()));
+            ${userDaoClass} user = ${userDaoClass?uncap_first}Service.getOne(new QueryWrapper<${userDaoClass}>().eq("${accountDaoClass.UNameColumn}", loginDto.getUserName()));
             //通过比对密码
             if(user != null & user.get${accountDaoClass.UPassword?cap_first}().equals(loginDto.getPassword())){
                 //设置session
@@ -61,7 +61,7 @@ public class AccountController {
     */
     @PostMapping("register")
     @ApiOperation(value = "用户注册")
-    public Result register(${userDaoClass} user){
+    public Result register(@RequestBody ${userDaoClass} user){
         //新增用户信息
         boolean save = ${userDaoClass?uncap_first}Service.save(user);
         //如果新增成功

@@ -30,7 +30,7 @@ public class SmallDaiGenerator implements Runnable{
     //密码
     private static String password = "123456";
     //数据库名称
-    private static String dbName = "x-admin";
+    private static String dbName = "small-dai-open-source";
 
     //数据库类型，此处为oracle准备,默认MySQL
     private static String dbType = "MYSQL";
@@ -196,12 +196,14 @@ public class SmallDaiGenerator implements Runnable{
                 String uid = "id";
                 String uname = "username";
                 String upassword = "password";
+                String unamecolumn = "username";
                 String uRoleId = "role";
                 AccountTableDao accountTableDao = new AccountTableDao();
                 for (ColumnDao column: tableDao.getColumns()) {
                     //判断是不是用户名字段
                     if(column.getColumnComment().equals("用户名")){
                         uname = column.getDealingColumnName();
+                        unamecolumn = column.getColumnName();
                     }
                     //判断是不是密码字段
                     if(column.getColumnComment().equals("密码")){
@@ -220,6 +222,7 @@ public class SmallDaiGenerator implements Runnable{
                 accountTableDao.setUName(uname);
                 accountTableDao.setUPassword(upassword);
                 accountTableDao.setURoleId(uRoleId);
+                accountTableDao.setUNameColumn(unamecolumn);
                 HashMap<String, Object> accountController = new HashMap<>();
                 accountController.put("basePackage",Constant.IMPORT_CONTROLLER_PACKAGE_PATH);
                 accountController.put("loginDtoPackage",Constant.IMPORT_COMMON_LOGIN_DTO_PACKAGE_PATH);

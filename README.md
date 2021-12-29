@@ -1,4 +1,5 @@
 # 小呆代码生成器(开源版)学习教程
+
 ## 简介
 小呆代码生成器学习教程涵盖架构、业务、技术要点的全方位解析。开源版small-dai-open-source是一套通过JDBC逆向生成**基于SpringBoot具有简单业务逻辑的管理类系统**，使用现阶段主流技术实现。涵盖了SpringBoot 2.5.8、 Mybatis Plus 3.4.1、Druid 1.2.2、 Swagger 3.0、 Vue 3.0、 前后端分离等。
 

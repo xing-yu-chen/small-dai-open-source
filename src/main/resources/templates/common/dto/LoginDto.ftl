@@ -1,6 +1,7 @@
 package ${basePackage};
 
 import lombok.Data;
+import java.io.Serializable;
 import java.lang.*;
 
 /**
@@ -10,7 +11,7 @@ import java.lang.*;
 * @Data:Created in 2021/12/22 5:49 下午
 */
 @Data
-public class LoginDto {
+public class LoginDto implements Serializable{
     /**
     * @Author: xingyuchen
     * @Discription: 用户名

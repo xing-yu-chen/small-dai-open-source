@@ -35,7 +35,7 @@ public class ${tableObj.dealingTableName}Controller {
     * @Date: 2021/12/24 6:41 下午
     */
     @ApiOperation(value = "${tableObj.comment}列表")
-    @GetMapping("/")
+    @GetMapping
     public Result listAll${tableObj.dealingTableName}s(){
         //列举所有的数据，此处可以配合使用vue的分页插件时使用
         List<${tableObj.dealingTableName}> list = ${tableObj.dealingTableName?uncap_first}Service.list();
@@ -75,7 +75,7 @@ public class ${tableObj.dealingTableName}Controller {
     */
     @ApiOperation(value = "新增某一个${tableObj.comment}")
     @PostMapping
-    public Result insert${tableObj.dealingTableName}(${tableObj.dealingTableName} ${tableObj.dealingTableName?uncap_first}){
+    public Result insert${tableObj.dealingTableName}(@RequestBody ${tableObj.dealingTableName} ${tableObj.dealingTableName?uncap_first}){
         //新增一个${tableObj.comment}
         boolean save = ${tableObj.dealingTableName?uncap_first}Service.save(${tableObj.dealingTableName?uncap_first});
         //如果成功
@@ -95,7 +95,7 @@ public class ${tableObj.dealingTableName}Controller {
     */
     @ApiOperation(value = "修改某一${tableObj.comment}")
     @PutMapping
-    public Result update${tableObj.dealingTableName}ById(${tableObj.dealingTableName} ${tableObj.dealingTableName?uncap_first}){
+    public Result update${tableObj.dealingTableName}ById(@RequestBody ${tableObj.dealingTableName} ${tableObj.dealingTableName?uncap_first}){
         //更新该ID的${tableObj.comment}
         boolean b = ${tableObj.dealingTableName?uncap_first}Service.updateById(${tableObj.dealingTableName?uncap_first});
         //如果成功

@@ -18,6 +18,7 @@ import java.io.Serializable;
 public class AccountTableDao {
     private String uId;
     private String uName;
+    private String uNameColumn;
     private String uPassword;
     private String uRoleId;
 }
