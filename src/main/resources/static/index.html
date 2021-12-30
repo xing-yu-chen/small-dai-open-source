@@ -55,20 +55,20 @@
 					<el-row :gutter="0">
 						<el-col :xs="{span: 24,offset: 0}" :sm="{span: 20,offset: 2}" :md="{span: 16,offset: 4}" :lg="{span: 12,offset: 12}" :xl="{span: 8,offset: 16}">
 							<div class="form-box">
-								 <el-form :model="data">
+								 <el-form :model="data" ref="userDto" :rules="rules">
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>账号</p>
-											 <el-form-item>
-												  <el-input v-model="loginDto.uName" placeholder="Username" />
+											 <el-form-item ref="userName">
+												  <el-input v-model="loginDto.userName" placeholder="Username" />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>密码</p>
-											 <el-form-item>
-												  <el-input v-model="loginDto.uPassword" placeholder="Password" />
+											 <el-form-item ref="password">
+												  <el-input v-model="loginDto.password" placeholder="Password" show-password/>
 											 </el-form-item>
 										</el-col>
 									</el-row>
@@ -96,24 +96,53 @@
 	</body>
 	<script src="./assets/js/axios.min.js"></script>
     <script>
-        const { createApp, reactive } = Vue;
+        const { createApp } = Vue;
+		
+		//基础路径
+		var baseUrl = "http://localhost/v1";
 
         const app = createApp({
             data: function() {
                 return { 
                     loginDto: {
-						uName: "",
-						uPassword: ""
+						userName: "",
+						password: ""
+					},
+					rules: {
+						userName: [
+							{required: true, message: '请输入账号', trigger: 'blur' },
+							{ min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+						],
+						password: [
+							{required: true, message: '请输入密码', trigger: 'blur'},
+							{ min: 7, max: 15, message: '长度在 7 到 15 个字符', trigger: 'blur' }
+						],
 					}
                 }
             },
 			methods:{
+				//注册页面跳转方法
 				turnToRegister(){
 					window.location.href = "./register.html";
 				},
+				//登录方法
 				login(){
-					axios.get('http://localhost/v1/users').then(res=>{
-						console.log(res)
+					//发送post登录请求
+					axios.post( baseUrl + '/login', this.loginDto ).then(res=>{
+						//当接收无误时写入localStorage保存
+						if ( res.data.code == 200 ) {
+							//向localStorage中存储一个对象，因为只能存字符串类型所以转化为字符串
+							window.localStorage.setItem("userMsg",JSON.stringify(res.data.data))
+							//存储后页面跳转
+							window.location.href = "";
+						}else {
+							//返回错误状态信息
+						   this.$message({
+								showClose: true,
+								message: res.data.data,
+								type: 'warning'
+							});
+						}
 					})
 				}
 			}

@@ -55,43 +55,43 @@
 					<el-row :gutter="0">
 						<el-col :xs="{span: 24,offset: 0}" :sm="{span: 20,offset: 2}" :md="{span: 16,offset: 4}" :lg="{span: 12,offset: 12}" :xl="{span: 8,offset: 16}">
 							<div class="form-box">
-								 <el-form ref="numberValidateForm" :model="numberValidateForm">
+								 <el-form  :model="userDao" ref="userDao" :rules="rules">
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>账号</p>
-											 <el-form-item>
-												  <el-input v-model="input" placeholder="Username" />
+											 <el-form-item prop="uname">
+												  <el-input v-model="userDao.uname" placeholder="Username" />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>密码</p>
-											 <el-form-item>
-												  <el-input v-model="input" placeholder="Password" />
+											 <el-form-item prop="upassword">
+												  <el-input v-model="userDao.upassword" placeholder="Password" show-password />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>邮箱</p>
-											 <el-form-item>
-												  <el-input v-model="input" placeholder="email" />
+											 <el-form-item prop="uemail">
+												  <el-input v-model="userDao.uemail" placeholder="email" />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>手机号</p>
-											 <el-form-item>
-												  <el-input v-model="input" placeholder="telephone" />
+											 <el-form-item prop="utelephone">
+												  <el-input v-model="userDao.utelephone" placeholder="telephone" />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row>
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 10}" :xl="{span: 10}">
 											 <el-form-item>
-												   <el-button color="#626aef" style="color: white;width: 100%;">注册</el-button>
+												   <el-button color="#626aef" style="color: white;width: 100%;" @click="register">注册</el-button>
 											 </el-form-item>
 										</el-col>
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 11}" :xl="{span: 11}">
@@ -115,17 +115,90 @@
 				</el-footer>
             </el-container>
           </el-container>
+		  <el-dialog
+		      v-model="dialogVisible"
+		      title="Tips"
+		      width="30%"
+		      :before-close="handleClose"
+		    >
+		      <span>{{msg}}</span>
+		      <template #footer>
+		        <span class="dialog-footer">
+		          <el-button @click="dialogVisible = false">关闭</el-button>
+		          <el-button type="primary" @click="sure"
+		            >确认</el-button
+		          >
+		        </span>
+		      </template>
+		    </el-dialog>
        </div>
 	</body>
+	<script src="./assets/js/axios.min.js"></script>
     <script>
         const { createApp } = Vue;
-
+		
+		//基础路径
+		var baseUrl = "http://localhost/v1";
+		
         const app = createApp({
             data: function() {
                 return { 
-                    message: "message"
+                    userDao: {
+						uname: '',
+						upassword: '',
+						uemail: '',
+						utelephone: ''
+					},
+					dialogVisible: false,
+					msg: '',
+					turnTo: false,
+					userNameRules: [
+						{required: true, message: '账号信息必填' },
+						{type: 'text', message: '账号必须以字母开头,包含数字、_三类型'}
+						
+					],
+					rules: {
+						uname: [
+							{required: true, message: '请输入账号', trigger: 'blur' },
+							{ min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+						],
+						upassword: [
+							{required: true, message: '请输入密码', trigger: 'blur'},
+							{ min: 7, max: 15, message: '长度在 7 到 15 个字符', trigger: 'blur' }
+						],
+						uemail: [
+							{required: true, message: '请输入邮箱', trigger: 'blur' },
+							{type: 'email', message: '输入内容必须为邮箱格式'}
+						],
+						utelephone: [
+							{required: true, message: '请输入手机号', trigger: 'blur'},
+							{pattern: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/, message:'请输入真实的11位手机号格式', trigger: 'change'}
+						]
+					}
                 }
-            }
+            },
+			methods: {
+				//注册方法
+				register(){
+					axios.post( baseUrl + "/register", this.userDao ).then(res=>{
+						this.dialogVisible = true;
+						this.msg = res.data.data;
+						if(res.data.code == 200) {
+							this.turnTo = true;
+						}else{
+							this.turnTo = false;
+						}
+					})
+				},
+				//点击确认的时候进行页面跳转
+				sure(){
+					if(this.turnTo){
+						window.location.href = "./index.html";
+					}else{
+						this.dialogVisible = false;
+					}
+				}
+			}
         })
         app.use(ElementPlus)
         app.mount("#app")

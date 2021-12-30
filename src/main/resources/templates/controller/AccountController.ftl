@@ -11,6 +11,7 @@ import ${entityPackage}.${userDaoClass};
 import ${servicePackage}.${userDaoClass}Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
 * @Author: xing-yu-chen
@@ -44,7 +45,7 @@ public class AccountController {
                 //设置session
                 request.getSession().setAttribute("userDto",user.get${accountDaoClass.UId?cap_first}());
                 //返回用户角色
-                return Result.succ(user.get${accountDaoClass.URoleId?cap_first}());
+                return Result.succ(user);
             }
             //用户信息异常报错信息返回
             return Result.fail(null,"用户信息异常");
@@ -62,6 +63,14 @@ public class AccountController {
     @PostMapping("register")
     @ApiOperation(value = "用户注册")
     public Result register(@RequestBody ${userDaoClass} user){
+        //判断数据库里面是否有已经有这个用户名了
+        int uName = userService.count(new QueryWrapper<${userDaoClass}>().eq("${accountDaoClass.UNameColumn}", user.get${accountDaoClass.UName?cap_first}()));
+        if(uName>0){
+        return Result.fail(null,"用户已存在");
+        }
+
+        //设置用户的创建时间
+        user.setGmtCreate(new Date());
         //新增用户信息
         boolean save = ${userDaoClass?uncap_first}Service.save(user);
         //如果新增成功
