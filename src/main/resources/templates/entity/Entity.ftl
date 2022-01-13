@@ -37,10 +37,19 @@ public class ${tableObj.dealingTableName} implements Serializable{
 
 <#list tableObj.columns as column>
     @ApiModelProperty(value = "${column.columnComment}")
+    @JsonProperty(value = "${column.dealingColumnName}")
 <#if column.columnKey=true>
-    @TableId(value = "${column.columnName}")
+    @TableId(value = "${column.columnName}", type = IdType.AUTO)
 <#else>
+    <#if column.columnComment != "创建时间" && column.columnComment != "修改时间">
     @TableField(value = "${column.columnName}")
+    <#elseif column.columnComment == "创建时间">
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="Asia/Shanghai")
+    @TableField(value = "${column.columnName}",fill = FieldFill.INSERT)
+    <#elseif column.columnComment == "修改时间">
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="Asia/Shanghai")
+    @TableField(value = "${column.columnName}",fill = FieldFill.INSERT_UPDATE)
+    </#if>
 </#if>
     private ${column.columnType} ${column.dealingColumnName};
 

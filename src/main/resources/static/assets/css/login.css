@@ -1,19 +1,37 @@
-*{
-    margin: 0;
-    padding: 0;
+* {
+	margin: 0;
+	padding: 0;
 }
+
 #app {
-    width: 100%;
-    height: 100vh;
-    background-image: url(../img/index.jpg);
-    background-size: 100% 100vh;
+	width: 100%;
+	height: 100vh;
+	background-image: url(../img/index.jpg);
+	background-size: 100% 100vh;
 }
+
 a {
 	text-decoration: none;
 }
-a:active,a:visited{
+
+a:active,
+a:visited {
 	color: grey;
 }
-a:hover,a:link{
+
+a:hover,
+a:link {
 	color: black;
+}
+
+.information-box {
+	width: 100%;
+	height: 8vh;
+	text-align: center;
+	line-height: 8vh;
+}
+
+.echarts-box {
+	width: 100%;
+	height: 40vh;
 }

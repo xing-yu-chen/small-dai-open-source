@@ -49,7 +49,7 @@
 				<el-main>
 					<el-row :gutter="0">
 						<el-col :xs="{span: 24,offset: 0}" :sm="{span: 20,offset: 2}" :md="{span: 16,offset: 4}" :lg="{span: 12,offset: 12}"  :xl="{span: 8,offset: 16}">
-							<h1 class="header-title">进销存后台管理系统</h1>
+							<h1 class="header-title">小呆后台管理系统</h1>
 						</el-col>
 					</el-row>
 					<el-row :gutter="0">
@@ -104,6 +104,7 @@
         const app = createApp({
             data: function() {
                 return { 
+					characterMsg: "",
                     loginDto: {
 						userName: "",
 						password: ""
@@ -133,8 +134,7 @@
 						if ( res.data.code == 200 ) {
 							//向localStorage中存储一个对象，因为只能存字符串类型所以转化为字符串
 							window.localStorage.setItem("userMsg",JSON.stringify(res.data.data))
-							//存储后页面跳转
-							window.location.href = "";
+							this.getCharacter(res.data.data)
 						}else {
 							//返回错误状态信息
 						   this.$message({
@@ -143,8 +143,31 @@
 								type: 'warning'
 							});
 						}
+					}).catch(err=>{
+						console.log("操作异常")
+					})
+				},
+				//获取角色权限
+				getCharacter(data){
+					axios.get(baseUrl + "/roles/" + data.uRoleId).then(res=>{
+						this.characterMsg = res.data.data
+						this.getPermissionWithRole(this.characterMsg.rId)
+					}).catch(()=>{
+						this.$message.error("角色获取失败")
+					})
+					
+				},
+				//获取该角色的所有权限
+				getPermissionWithRole(rId){
+					axios.get(baseUrl + "/roleToPermissions/" + rId +"/role").then(res=>{
+						localStorage.setItem("permissionsByRole", JSON.stringify(res.data.data))
+						//存储后页面跳转
+						window.location.href = "./panel.html";
+					}).catch(()=>{
+						this.$message.error("权限获取失败")
 					})
 				}
+				
 			}
         })
         app.use(ElementPlus)

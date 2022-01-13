@@ -111,6 +111,12 @@ public class Constant {
 
     /**
      * @Author: xingyuchen
+     * @Discription: html生成路径
+     * @Date: 2022/1/7 9:14 下午
+    */
+    public static final String HTML_BASE_PATH = Constant.BASE_RESOURCE_PATH + "static/";
+    /**
+     * @Author: xingyuchen
      * @Discription: 创建文件夹名称
      * @Date: 2021/12/21 3:31 下午
     */

@@ -49,7 +49,7 @@
 				<el-main>
 					<el-row :gutter="0">
 						<el-col :xs="{span: 24,offset: 0}" :sm="{span: 20,offset: 2}" :md="{span: 16,offset: 4}" :lg="{span: 12,offset: 12}"  :xl="{span: 8,offset: 16}">
-							<h1 class="header-title">进销存后台管理系统</h1>
+							<h1 class="header-title">小呆后台管理系统</h1>
 						</el-col>
 					</el-row>
 					<el-row :gutter="0">
@@ -59,32 +59,32 @@
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>账号</p>
-											 <el-form-item prop="uname">
-												  <el-input v-model="userDao.uname" placeholder="Username" />
+											 <el-form-item prop="uName">
+												  <el-input v-model="userDao.uName" placeholder="Username" />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>密码</p>
-											 <el-form-item prop="upassword">
-												  <el-input v-model="userDao.upassword" placeholder="Password" show-password />
+											 <el-form-item prop="uPassword">
+												  <el-input v-model="userDao.uPassword" placeholder="Password" show-password />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>邮箱</p>
-											 <el-form-item prop="uemail">
-												  <el-input v-model="userDao.uemail" placeholder="email" />
+											 <el-form-item prop="uEmail">
+												  <el-input v-model="userDao.uEmail" placeholder="email" />
 											 </el-form-item>
 										</el-col>
 									</el-row>
 									<el-row :gutter="0">
 										<el-col :xs="{span: 22,offset: 1}" :sm="{span: 22,offset: 1}" :md="{span: 22,offset: 1}" :lg="{span: 22,offset: 1}" :xl="{span: 22,offset: 1}">
 											<p>手机号</p>
-											 <el-form-item prop="utelephone">
-												  <el-input v-model="userDao.utelephone" placeholder="telephone" />
+											 <el-form-item prop="uTelephone">
+												  <el-input v-model="userDao.uTelephone" placeholder="telephone" />
 											 </el-form-item>
 										</el-col>
 									</el-row>
@@ -144,10 +144,10 @@
             data: function() {
                 return { 
                     userDao: {
-						uname: '',
-						upassword: '',
-						uemail: '',
-						utelephone: ''
+						uName: '',
+						uPassword: '',
+						uEmail: '',
+						uTelephone: ''
 					},
 					dialogVisible: false,
 					msg: '',
@@ -158,19 +158,19 @@
 						
 					],
 					rules: {
-						uname: [
+						uName: [
 							{required: true, message: '请输入账号', trigger: 'blur' },
 							{ min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
 						],
-						upassword: [
+						uPassword: [
 							{required: true, message: '请输入密码', trigger: 'blur'},
 							{ min: 7, max: 15, message: '长度在 7 到 15 个字符', trigger: 'blur' }
 						],
-						uemail: [
+						uEmail: [
 							{required: true, message: '请输入邮箱', trigger: 'blur' },
 							{type: 'email', message: '输入内容必须为邮箱格式'}
 						],
-						utelephone: [
+						uTelephone: [
 							{required: true, message: '请输入手机号', trigger: 'blur'},
 							{pattern: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/, message:'请输入真实的11位手机号格式', trigger: 'change'}
 						]
@@ -188,6 +188,8 @@
 						}else{
 							this.turnTo = false;
 						}
+					}).catch(err=>{
+						console.log("操作异常")
 					})
 				},
 				//点击确认的时候进行页面跳转

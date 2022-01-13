@@ -2,11 +2,13 @@ package top.smalldai.opensource.util.generator.utils;
 
 import top.smalldai.opensource.util.generator.dao.ColumnDao;
 import top.smalldai.opensource.util.generator.dao.DatabaseDao;
+import top.smalldai.opensource.util.generator.dao.PermissionDao;
 import top.smalldai.opensource.util.generator.dao.TableDao;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,7 +73,7 @@ public class DbUtil {
                 //设置表的名字
                 tableDao.setTableName(tables.getString("TABLE_NAME"));
                 //设置表的备注
-                tableDao.setComment(DbUtil.trimSpaceTag(tables.getString("REMARKS").trim()));
+                tableDao.setComment(NameStrUtil.deleteBiaoName(DbUtil.trimSpaceTag(tables.getString("REMARKS").trim())));
                 //设置处理后表的名称
                 tableDao.setDealingTableName(NameStrUtil.tableNameStringDealing(tableDao.getTableName()));
                 //获取该表作为主键的字段
@@ -250,6 +252,44 @@ public class DbUtil {
         return str.trim(); // 返回文本字符串
     }
 
+    /**
+     * @Author: xingyuchen
+     * @Discription: 往角色权限表中填入数据
+     * @param database
+     * @Date: 2022/1/9 12:48 上午
+    */
+    public static String insertMsg(DatabaseDao database, List<PermissionDao> list){
+        //数据库连接
+        try {
+            Connection connection = DbUtil.getDbConnection(database);
+            for (PermissionDao permission:list) {
+                //存在就修改，不存在就新增
+                String selectSQL = "update t_permission set p_name_remark = ?,p_module = ? where p_name = ?";
+                PreparedStatement ps1 = connection.prepareStatement(selectSQL);
+                ps1.setString(1, permission.getPNameRemark());
+                ps1.setString(2, permission.getPModule());
+                ps1.setString(3, permission.getPName());
+                int i = ps1.executeUpdate();
+                if (i <= 0){
+                    String insertSQL = "insert into t_permission(p_name,p_name_remark,p_module,gmt_create) values(?,?,?,?)";
+                    PreparedStatement ps2 = connection.prepareStatement(insertSQL);
+                    ps2.setString(1, permission.getPName());
+                    ps2.setString(2, permission.getPNameRemark());
+                    ps2.setString(3, permission.getPModule());
+                    ps2.setObject(4, permission.getGmtCreate());
+                    int i1 = ps2.executeUpdate();
+                    ps2.close();
+                }
+                ps1.close();
+            }
 
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
 
 }

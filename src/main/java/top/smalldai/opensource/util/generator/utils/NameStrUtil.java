@@ -69,6 +69,34 @@ public class NameStrUtil {
 
     /**
      * @Author: xingyuchen
+     * @Discription: 处理备注信息，去除表这词
+     * @param str
+     * @Date: 2022/1/11 2:14 下午
+    */
+    public static String deleteBiaoName(String str){
+        //正则条件
+        String pattern = "[表]";
+        //使用Pattern对象
+        Pattern r = Pattern.compile(pattern);
+        //将匹配的到的字符串切割
+        String[] split = r.split(str);
+        //如果未分割就说明在首尾或者不存在表这个字段
+        if(split.length == 1){
+            System.out.println(split[0]);
+            //返回截取后的第一个字段
+            return split[0];
+        }
+        StringBuilder stringBuilder=new StringBuilder();
+        for (int i = 0; i < split.length; i++) {
+            //在中间就拼接
+            stringBuilder.append(split[i]);
+        }
+        System.out.println(stringBuilder);
+        return stringBuilder.toString();
+    }
+
+    /**
+     * @Author: xingyuchen
      * @Discription: 单词首字母大写
      * @param str
      * @Date: 2021/12/20 10:42 上午
@@ -90,5 +118,4 @@ public class NameStrUtil {
         str = str.substring(0,1).toLowerCase() + str.substring(1);
         return str;
     }
-
 }

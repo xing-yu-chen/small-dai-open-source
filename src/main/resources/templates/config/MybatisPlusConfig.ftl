@@ -1,10 +1,14 @@
 package ${basePackage};
 
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Date;
 
 /**
 * @Author: xing-yu-chen
@@ -13,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 * @Data:Created in 2021/12/12 3:56 上午
 */
 @Configuration
-public class MybatisPlusConfig {
+public class MybatisPlusConfig implements MetaObjectHandler {
     /**
     * @Author: xingyuchen
     * @Discription: 分页插件
@@ -33,5 +37,17 @@ public class MybatisPlusConfig {
 
         interceptor.addInnerInterceptor(pageInterceptor);
         return interceptor;
+    }
+
+    @Override
+    public void insertFill(MetaObject metaObject) {
+        //属性名称，不是字段名称
+        this.setFieldValByName("gmtCreate", new Date(), metaObject);
+        this.setFieldValByName("gmtModified", new Date(), metaObject);
+    }
+
+    @Override
+    public void updateFill(MetaObject metaObject) {
+        this.setFieldValByName("gmtModified", new Date(), metaObject);
     }
 }

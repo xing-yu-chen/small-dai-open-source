@@ -2,16 +2,13 @@ package top.smalldai.opensource.util.generator;
 
 import lombok.extern.slf4j.Slf4j;
 import top.smalldai.opensource.util.generator.constant.Constant;
-import top.smalldai.opensource.util.generator.dao.AccountTableDao;
-import top.smalldai.opensource.util.generator.dao.ColumnDao;
-import top.smalldai.opensource.util.generator.dao.DatabaseDao;
-import top.smalldai.opensource.util.generator.dao.TableDao;
+import top.smalldai.opensource.util.generator.dao.*;
 import top.smalldai.opensource.util.generator.utils.DbUtil;
 import top.smalldai.opensource.util.generator.utils.FileUtil;
 import top.smalldai.opensource.util.generator.utils.FreemarkerUtil;
+import top.smalldai.opensource.util.generator.utils.NameStrUtil;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author: xing-yu-chen
@@ -138,17 +135,66 @@ public class SmallDaiGenerator implements Runnable{
 
         //遍历所有表和表中的字段
         List<TableDao> tableBaseMsg = DbUtil.getTableBaseMsg(database, dbName);
+        HashMap<String, Object> html = new HashMap<>();
+        HashMap<String, Object> controller = new HashMap<>();
+        HashMap<String, Object> service = new HashMap<>();
+        HashMap<String, Object> serviceImpl = new HashMap<>();
+        HashMap<String, Object> mapper = new HashMap<>();
+        HashMap<String, Object> mapperXml = new HashMap<>();
+        HashMap<String, Object> entity = new HashMap<>();
+
+        html.put("daoList",tableBaseMsg);
+        List<PermissionDao> permissionDaos = new ArrayList<>();
+        PermissionDao panel = new PermissionDao();
+        panel.setPName("visitedPanel");
+        panel.setPNameRemark("访问数据面板");
+        panel.setPModule("Panel");
+        panel.setGmtCreate(new Date());
+        permissionDaos.add(panel);
+
         for (TableDao tableDao:tableBaseMsg) {
-            System.out.println(tableDao.getColumns() );
+            log.info("======================开始往数据库中插入所有的权限信息============================");
+            PermissionDao visited = new PermissionDao();
+            visited.setPName("visited" + tableDao.getDealingTableName());
+            visited.setPNameRemark("访问" + tableDao.getComment() + "管理");
+            visited.setPModule(tableDao.getDealingTableName());
+            visited.setGmtCreate(new Date());
+            PermissionDao save = new PermissionDao();
+            save.setPName("save" + tableDao.getDealingTableName());
+            save.setPNameRemark("新增" + tableDao.getComment());
+            save.setPModule(tableDao.getDealingTableName());
+            save.setGmtCreate(new Date());
+            PermissionDao delete = new PermissionDao();
+            delete.setPName("delete" + tableDao.getDealingTableName());
+            delete.setPNameRemark("删除" + tableDao.getComment());
+            delete.setPModule(tableDao.getDealingTableName());
+            delete.setGmtCreate(new Date());
+            PermissionDao update = new PermissionDao();
+            update.setPName("update" + tableDao.getDealingTableName());
+            update.setPNameRemark("修改" + tableDao.getComment());
+            update.setPModule(tableDao.getDealingTableName());
+            update.setGmtCreate(new Date());
+            PermissionDao deletedAll = new PermissionDao();
+            deletedAll.setPName("clear" + tableDao.getDealingTableName());
+            deletedAll.setPNameRemark("批量删除" + tableDao.getComment());
+            deletedAll.setPModule(tableDao.getDealingTableName());
+            deletedAll.setGmtCreate(new Date());
+            permissionDaos.add(visited);
+            permissionDaos.add(save);
+            permissionDaos.add(delete);
+            permissionDaos.add(update);
+            permissionDaos.add(deletedAll);
+            DbUtil.insertMsg(database, permissionDaos);
+
             log.info("======================开始生成"+ tableDao.getDealingTableName() +"Entity============================");
-            HashMap<String, Object> entity = new HashMap<>();
+
             entity.put("basePackage",Constant.IMPORT_ENTITY_PACKAGE_PATH);
             entity.put("tableObj",tableDao);
             FreemarkerUtil.fileFreemarker(entity,Constant.BASE_TEMPLATE_PATH,"entity/Entity.ftl",Constant.ENTITY_BASE_PATH + tableDao.getDealingTableName() + ".java");
             log.info(tableDao.getDealingTableName()+"实体类生成完毕");
 
             log.info("======================开始生成"+ tableDao.getDealingTableName() +"Mapper============================");
-            HashMap<String, Object> mapper = new HashMap<>();
+
             mapper.put("basePackage",Constant.IMPORT_MAPPER_PACKAGE_PATH);
             mapper.put("entityPackage",Constant.IMPORT_ENTITY_PACKAGE_PATH);
             mapper.put("tableObj",tableDao);
@@ -156,22 +202,22 @@ public class SmallDaiGenerator implements Runnable{
             log.info(tableDao.getDealingTableName()+"Mapper生成完毕");
 
             log.info("====================开始生成"+ tableDao.getDealingTableName() +"Mapper XML==========================");
-            HashMap<String, Object> mapperXml = new HashMap<>();
+
             mapperXml.put("mapperPackage",Constant.IMPORT_MAPPER_PACKAGE_PATH);
             mapperXml.put("entityName",tableDao.getDealingTableName());
             FreemarkerUtil.fileFreemarker(mapperXml,Constant.BASE_TEMPLATE_PATH,"mappers_xml/MapperXml.ftl",Constant.MAPPER_XML_BASE_PATH + tableDao.getDealingTableName() + "Mapper.xml");
             log.info(tableDao.getDealingTableName()+"MapperXML生成完毕");
 
             log.info("======================开始生成"+ tableDao.getDealingTableName() +"Service============================");
-            HashMap<String, Object> service = new HashMap<>();
+
             service.put("basePackage",Constant.IMPORT_SERVICE_PACKAGE_PATH);
             service.put("entityPackage",Constant.IMPORT_ENTITY_PACKAGE_PATH);
             service.put("tableObj",tableDao);
             FreemarkerUtil.fileFreemarker(service,Constant.BASE_TEMPLATE_PATH,"service/Service.ftl",Constant.SERVICE_BASE_PATH + tableDao.getDealingTableName() + "Service.java");
             log.info(tableDao.getDealingTableName()+"Service生成完毕");
 
-            log.info("======================开始生成"+ tableDao.getDealingTableName() +"ServiceImpl============================");
-            HashMap<String, Object> serviceImpl = new HashMap<>();
+            log.info("======================开始生成" + tableDao.getDealingTableName() + "ServiceImpl============================");
+
             serviceImpl.put("basePackage",Constant.IMPORT_SERVICE_IMPL_PACKAGE_PATH);
             serviceImpl.put("entityPackage",Constant.IMPORT_ENTITY_PACKAGE_PATH);
             serviceImpl.put("mapperPackage",Constant.IMPORT_MAPPER_PACKAGE_PATH);
@@ -180,13 +226,20 @@ public class SmallDaiGenerator implements Runnable{
             FreemarkerUtil.fileFreemarker(serviceImpl,Constant.BASE_TEMPLATE_PATH,"service/impl/ServiceImpl.ftl",Constant.SERVICE_IMPL_BASE_PATH + tableDao.getDealingTableName() + "ServiceImpl.java");
             log.info(tableDao.getDealingTableName()+"ServiceImpl生成完毕");
 
-            log.info("======================开始生成"+ tableDao.getDealingTableName() +"Controller============================");
-            HashMap<String, Object> controller = new HashMap<>();
+            log.info("======================开始生成" + tableDao.getDealingTableName() + "Controller============================");
+
             controller.put("basePackage",Constant.IMPORT_CONTROLLER_PACKAGE_PATH);
             controller.put("servicePackage",Constant.IMPORT_SERVICE_PACKAGE_PATH);
             controller.put("entityPackage",Constant.IMPORT_ENTITY_PACKAGE_PATH);
             controller.put("resultPackage",Constant.IMPORT_COMMON_LANG_RESULT_PACKAGE_PATH);
             controller.put("tableObj",tableDao);
+
+            for (ColumnDao columnDao : tableDao.getColumns()) {
+                //判断备注是否是ID
+                if(columnDao.getColumnComment().equals("ID")) {
+                    controller.put("IDComment", columnDao.getDealingColumnName());
+                }
+            }
             FreemarkerUtil.fileFreemarker(controller,Constant.BASE_TEMPLATE_PATH,"controller/Controller.ftl",Constant.CONTROLLER_BASE_PATH + tableDao.getDealingTableName() + "Controller.java");
             log.info(tableDao.getDealingTableName()+"Controller生成完毕");
 
@@ -234,6 +287,12 @@ public class SmallDaiGenerator implements Runnable{
                 FreemarkerUtil.fileFreemarker(accountController,Constant.BASE_TEMPLATE_PATH,"controller/AccountController.ftl",Constant.CONTROLLER_BASE_PATH + "AccountController.java");
                 log.info("AccountController生成完毕");
             }
+            log.info("======================开始生成前端============================");
+            html.put("dao",tableDao);
+            log.info("======================生成组件============================");
+            FreemarkerUtil.fileFreemarker(html,Constant.BASE_TEMPLATE_PATH,"static/Manager.ftl", Constant.HTML_BASE_PATH + NameStrUtil.lowerCaseName(tableDao.getDealingTableName()) + "Manager.html");
+            log.info("======================开始生成数据面板============================");
+            FreemarkerUtil.fileFreemarker(html,Constant.BASE_TEMPLATE_PATH,"static/Panel.ftl", Constant.HTML_BASE_PATH +  "panel.html");
         }
     }
 
